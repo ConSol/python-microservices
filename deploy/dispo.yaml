@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dispo
+  labels:
+    app: dispo
+spec:
+  selector:
+    matchLabels:
+      app: dispo
+  template:
+    metadata:
+      labels:
+        app: dispo
+    spec:
+      containers:
+        - name: dispo
+          image: dispo
+          ports:
+            - containerPort: 8000
+            - containerPort: 5678
+          env:
+            - name: DATABASE_URL
+              value: postgresql://dispo:mysecretpassword@postgres/dispo
+            - name: AMQP_URL
+              value: amqp://rabbit:mysecretpassword@rabbitmq:5672/
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger:4317
+            - name: OTEL_SERVICE_NAME
+              value: dispo
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 400m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dispo
+spec:
+  selector:
+    app: dispo
+  ports:
+    - name: api
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+    - name: debugger
+      protocol: TCP
+      port: 5678
+      targetPort: 5678
