@@ -43,10 +43,18 @@ docker_build(
     context='./dispo',
     dockerfile='./dispo/Dockerfile',
     entrypoint=["./start-debug.sh"],
+    ignore=["**/__pycache__", ".pytest_cache", "**/*.pyc*"],
     live_update=[
-        sync('./dispo/dispo/', '/svc/dispo'),
+        sync('./dispo/dispo', '/svc/dispo'),
     ],
 )
+
+docker_build(
+    'mypostgres',
+    context='./mypostgres',
+    dockerfile='./mypostgres/Dockerfile',
+)
+
 
 # Apply Kubernetes manifests
 #   Tilt will build & push any necessary images, re-deploying your
@@ -56,6 +64,8 @@ docker_build(
 #
 # k8s_yaml(['k8s/deployment.yaml', 'k8s/service.yaml'])
 k8s_yaml('deploy/dispo.yaml')
+k8s_yaml('deploy/postgres.yaml')
+
 
 # Customize a Kubernetes resource
 #   By default, Kubernetes resource names are automatically assigned
@@ -79,6 +89,12 @@ k8s_resource(
     'dispo',
     port_forwards=['8080:8000', '5678:5678']
 )
+
+k8s_resource(
+    'postgres',
+    port_forwards=['5432:5432']
+)
+
 
 # Run local commands
 #   Local commands can be helpful for one-time tasks like installing

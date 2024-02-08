@@ -4,6 +4,8 @@ set -e
 
 . /venv/bin/activate
 
+python -m dispo.database
+
 exec python \
   -m debugpy --listen 0.0.0.0:5678 \
   -m uvicorn \

@@ -19,6 +19,9 @@
       "request": "launch",
       "module": "uvicorn",
       "args": ["dispo.main:app", "--reload"],
+      "env": {
+        "DATABASE_URL": "postgresql://dispo:mysecretpassword@localhost/dispo"
+      },
       "jinja": true
     }
   ]
