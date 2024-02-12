@@ -2,12 +2,13 @@ import logging
 
 from fastapi import FastAPI
 
-from dispo.api import room
+from dispo.api import booking, room
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 app.include_router(room.router)
+app.include_router(booking.router)
 
 
 @app.get("/")
