@@ -1,9 +1,10 @@
 import logging
 import os
 from functools import cache
+from typing import Generator
 
 from sqlalchemy import create_engine
-from sqlmodel import SQLModel
+from sqlmodel import Session, SQLModel
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,11 @@ def get_engine():
     engine = create_engine(database_url)
     logger.info(f"using database {engine.url}")
     return engine
+
+
+def get_db() -> Generator:
+    with Session(get_engine()) as session:
+        yield session
 
 
 def create_schema():
