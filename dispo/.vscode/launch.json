@@ -20,7 +20,8 @@
       "module": "uvicorn",
       "args": ["dispo.main:app", "--reload"],
       "env": {
-        "DATABASE_URL": "postgresql://dispo:mysecretpassword@localhost/dispo"
+        "DATABASE_URL": "postgresql://dispo:mysecretpassword@localhost/dispo",
+        "AMQP_URL": "amqp://rabbit:mysecretpassword@localhost:5672/"
       },
       "jinja": true
     }

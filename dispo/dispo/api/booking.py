@@ -4,6 +4,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
+from dispo import tasks
 from dispo.database import get_db
 from dispo.models import Booking, BookingBase, BookingWithRoom
 
@@ -22,6 +23,12 @@ def create_booking(
     db.add(booking)
     db.commit()
     db.refresh(booking)
+
+    logger.info("pushing to queue")
+    tasks.booking_created.delay(
+        {"room": booking.room.name, "start": booking.start, "end": booking.end}
+    )
+
     return booking
 
 

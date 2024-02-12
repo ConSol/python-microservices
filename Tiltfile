@@ -65,6 +65,7 @@ docker_build(
 # k8s_yaml(['k8s/deployment.yaml', 'k8s/service.yaml'])
 k8s_yaml('deploy/dispo.yaml')
 k8s_yaml('deploy/postgres.yaml')
+k8s_yaml('deploy/rabbitmq.yaml')
 
 
 # Customize a Kubernetes resource
@@ -95,6 +96,10 @@ k8s_resource(
     port_forwards=['5432:5432']
 )
 
+k8s_resource(
+    'rabbitmq',
+    port_forwards=['15672:15672', '5672:5672']
+)
 
 # Run local commands
 #   Local commands can be helpful for one-time tasks like installing
