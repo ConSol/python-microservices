@@ -55,6 +55,17 @@ docker_build(
     dockerfile='./mypostgres/Dockerfile',
 )
 
+docker_build(
+    'cleaning',
+    context='./cleaning',
+    dockerfile='./cleaning/api.Dockerfile',
+    entrypoint=["./start-debug.sh"],
+    ignore=["**/__pycache__", ".pytest_cache", "**/*.pyc*"],
+    live_update=[
+        sync('./cleaning/cleaning', '/svc/cleaning'),
+    ],
+)
+
 
 # Apply Kubernetes manifests
 #   Tilt will build & push any necessary images, re-deploying your
@@ -66,6 +77,7 @@ docker_build(
 k8s_yaml('deploy/dispo.yaml')
 k8s_yaml('deploy/postgres.yaml')
 k8s_yaml('deploy/rabbitmq.yaml')
+k8s_yaml('deploy/cleaning.yaml')
 
 
 # Customize a Kubernetes resource
@@ -100,6 +112,12 @@ k8s_resource(
     'rabbitmq',
     port_forwards=['15672:15672', '5672:5672']
 )
+
+k8s_resource(
+    'cleaning',
+    port_forwards=['8081:8000', '5679:5678']
+)
+
 
 # Run local commands
 #   Local commands can be helpful for one-time tasks like installing

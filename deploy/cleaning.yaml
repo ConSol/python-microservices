@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cleaning
+  labels:
+    app: cleaning
+spec:
+  selector:
+    matchLabels:
+      app: cleaning
+  template:
+    metadata:
+      labels:
+        app: cleaning
+    spec:
+      containers:
+        - name: cleaning
+          image: cleaning
+          ports:
+            - containerPort: 8000
+            - containerPort: 5678
+          env:
+            - name: DATABASE_URL
+              value: postgresql://cleaning:mysecretpassword@postgres/cleaning
+            - name: AMQP_URL
+              value: amqp://rabbit:mysecretpassword@rabbitmq:5672/
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger:4317
+            - name: OTEL_SERVICE_NAME
+              value: cleaning
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 400m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cleaning
+spec:
+  selector:
+    app: cleaning
+  ports:
+    - name: api
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+    - name: debugger
+      protocol: TCP
+      port: 5679
+      targetPort: 5679
