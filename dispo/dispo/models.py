@@ -1,17 +1,21 @@
 from datetime import date
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import model_validator
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 
-class Room(SQLModel, table=True):
+class RoomBase(SQLModel):
     id: Optional[int] = Field(default=None, primary_key=True)
     number: str = Field(index=True)
     name: str
 
 
-class Booking(SQLModel, table=True):
+class Room(RoomBase, table=True):
+    bookings: List["Booking"] = Relationship(back_populates="room")
+
+
+class BookingBase(SQLModel):
     id: Optional[int] = Field(default=None, primary_key=True)
     room_id: Optional[int] = Field(default=None, foreign_key="room.id")
     start: date
@@ -22,3 +26,12 @@ class Booking(SQLModel, table=True):
         if self.start >= self.end:
             raise ValueError("start is not before end.")
         return self
+
+
+class Booking(BookingBase, table=True):
+    room: Room = Relationship(back_populates="bookings")
+
+
+# separate class is needed to allow response including relations
+class BookingWithRoom(BookingBase):
+    room: Optional[Room] = None

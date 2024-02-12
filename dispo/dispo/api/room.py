@@ -1,11 +1,12 @@
 import logging
+from datetime import date
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, and_, not_, select
 
 from dispo.database import get_db
-from dispo.models import Room
+from dispo.models import Booking, Room
 
 logger = logging.getLogger(__name__)
 
@@ -57,3 +58,15 @@ async def delete_room(room_id: int, db: SessionDep):
         raise HTTPException(status_code=404, detail="Room not found.")
     db.delete(room)
     db.commit()
+
+
+@router.get("/free/")
+async def rooms_free(start: date, end: date, db: SessionDep):
+    query = select(Booking.room_id).where(
+        and_(Booking.start < end, Booking.end > start)
+    )
+    room_ids = db.exec(query).all()
+    logger.info(f"{start} - {end} : {room_ids}")
+    filter_clause = not_(Room.id.in_(room_ids))
+    rooms = db.exec(select(Room).filter(filter_clause)).all()
+    return rooms

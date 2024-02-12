@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from dispo.database import get_db
-from dispo.models import Booking
+from dispo.models import Booking, BookingBase, BookingWithRoom
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/bookings", tags=["bookings"])
@@ -15,7 +15,7 @@ SessionDep = Annotated[Session, Depends(get_db)]
 
 @router.post("/", response_model=Booking)
 def create_booking(
-    booking_data: Booking,
+    booking_data: BookingBase,
     db: SessionDep,
 ):
     booking = Booking.model_validate(booking_data)
@@ -31,7 +31,7 @@ async def read_all_bookings(db: SessionDep):
     return bookings
 
 
-@router.get("/{booking_id}", response_model=Booking)
+@router.get("/{booking_id}", response_model=BookingWithRoom)
 async def read_booking(booking_id: int, db: SessionDep):
     booking = db.get(Booking, booking_id)
     if not booking:
