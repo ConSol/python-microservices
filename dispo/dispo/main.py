@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import Depends, FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator as PrometheusInstrumentator
 from sqlalchemy import text
 from sqlmodel import Session
 
@@ -13,6 +14,9 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 app.include_router(room.router)
 app.include_router(booking.router)
+
+prom_instrumentator = PrometheusInstrumentator().instrument(app)
+prom_instrumentator.expose(app)
 
 
 @app.get("/")

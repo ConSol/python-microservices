@@ -77,6 +77,12 @@ docker_build(
     ],
 )
 
+docker_build(
+    'myprometheus',
+    context='./myprometheus',
+    dockerfile='./myprometheus/Dockerfile'
+)
+
 
 # Apply Kubernetes manifests
 #   Tilt will build & push any necessary images, re-deploying your
@@ -90,7 +96,7 @@ k8s_yaml('deploy/postgres.yaml')
 k8s_yaml('deploy/rabbitmq.yaml')
 k8s_yaml('deploy/cleaning.yaml')
 k8s_yaml('deploy/cleaning_worker.yaml')
-
+k8s_yaml('deploy/prometheus.yaml')
 
 # Customize a Kubernetes resource
 #   By default, Kubernetes resource names are automatically assigned
@@ -135,6 +141,10 @@ k8s_resource(
     port_forwards=['5680:5678']
 )
 
+k8s_resource(
+    'prometheus',
+    port_forwards=['9090:9090']
+)
 
 # Run local commands
 #   Local commands can be helpful for one-time tasks like installing

@@ -15,6 +15,7 @@ sqlmodel = "^0.0.14"
 psycopg2-binary = "^2.9.9"
 sqlalchemy = "^2.0.25"
 celery = "^5.3.6"
+prometheus-fastapi-instrumentator = "^6.1.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "cleaning.worker",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "celery",
       "args": ["-A", "cleaning.celery_worker", "worker", "-l", "INFO", "-P", "solo"],
@@ -20,15 +20,23 @@
     },
     {
       "name": "Remote Attach",
-      "type": "python",
+      "type": "debugpy",
       "request": "attach",
       "connect": {"host": "localhost", "port": 5679},
       "pathMappings": [{"localRoot": "${workspaceFolder}", "remoteRoot": "."}],
       "justMyCode": false
     },
     {
+      "name": "Remote Attach worker",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {"host": "localhost", "port": 5680},
+      "pathMappings": [{"localRoot": "${workspaceFolder}", "remoteRoot": "."}],
+      "justMyCode": false
+    },
+    {
       "name": "FastAPI",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
       "env": {

@@ -15,6 +15,11 @@ psycopg2-binary = "^2.9.9"
 pyyaml = "^6.0.1"
 debugpy = "^1.8.0"
 celery = "^5.3.6"
+opentelemetry-distro = "^0.43b0"
+opentelemetry-exporter-otlp-proto-grpc = "^1.22.0"
+opentelemetry-instrumentation-fastapi = "^0.43b0"
+opentelemetry-instrumentation-celery = "^0.43b0"
+opentelemetry-instrumentation-sqlalchemy = "^0.43b0"
 watchdog = "^4.0.0"
 
 
