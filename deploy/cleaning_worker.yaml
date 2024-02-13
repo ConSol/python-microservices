@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cleaning.worker
+  labels:
+    app: cleaning
+spec:
+  selector:
+    matchLabels:
+      app: cleaning
+  template:
+    metadata:
+      labels:
+        app: cleaning
+    spec:
+      containers:
+        - name: cleaning-worker
+          image: cleaning-worker
+          env:
+            - name: DATABASE_URL
+              value: postgresql://cleaning:mysecretpassword@postgres/cleaning
+            - name: AMQP_URL
+              value: amqp://rabbit:mysecretpassword@rabbitmq:5672/
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger:4317
+            - name: OTEL_SERVICE_NAME
+              value: cleaning.worker
+          command: ["./start-worker.sh"]
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 400m

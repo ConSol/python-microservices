@@ -58,8 +58,19 @@ docker_build(
 docker_build(
     'cleaning',
     context='./cleaning',
-    dockerfile='./cleaning/api.Dockerfile',
+    dockerfile='./cleaning/worker.Dockerfile',
     entrypoint=["./start-debug.sh"],
+    ignore=["**/__pycache__", ".pytest_cache", "**/*.pyc*"],
+    live_update=[
+        sync('./cleaning/cleaning', '/svc/cleaning'),
+    ],
+)
+
+docker_build(
+    'cleaning-worker',
+    context='./cleaning',
+    dockerfile='./cleaning/api.Dockerfile',
+    entrypoint=["./start-worker-debug.sh"],
     ignore=["**/__pycache__", ".pytest_cache", "**/*.pyc*"],
     live_update=[
         sync('./cleaning/cleaning', '/svc/cleaning'),
@@ -78,6 +89,7 @@ k8s_yaml('deploy/dispo.yaml')
 k8s_yaml('deploy/postgres.yaml')
 k8s_yaml('deploy/rabbitmq.yaml')
 k8s_yaml('deploy/cleaning.yaml')
+k8s_yaml('deploy/cleaning_worker.yaml')
 
 
 # Customize a Kubernetes resource
@@ -116,6 +128,11 @@ k8s_resource(
 k8s_resource(
     'cleaning',
     port_forwards=['8081:8000', '5679:5678']
+)
+
+k8s_resource(
+    'cleaning.worker',
+    port_forwards=['5680:5678']
 )
 
 
