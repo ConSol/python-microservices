@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import Depends, FastAPI, HTTPException
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from prometheus_fastapi_instrumentator import Instrumentator as PrometheusInstrumentator
 from sqlalchemy import text
 from sqlmodel import Session
@@ -8,12 +9,17 @@ from sqlmodel import Session
 from dispo import tasks
 from dispo.api import booking, room
 from dispo.database import get_db
+from dispo.tracing import setup_tracing
 
+setup_tracing()
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 app.include_router(room.router)
 app.include_router(booking.router)
+
+FastAPIInstrumentor.instrument_app(app)
+tasks.init_celery_tracing()
 
 prom_instrumentator = PrometheusInstrumentator().instrument(app)
 prom_instrumentator.expose(app)

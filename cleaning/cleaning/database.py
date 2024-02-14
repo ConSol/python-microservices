@@ -2,6 +2,7 @@ import logging
 import os
 from functools import cache
 
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from sqlmodel import Session, SQLModel, create_engine
 
 logger = logging.getLogger(__name__)
@@ -12,6 +13,7 @@ def get_engine(echo=False):
     database_url = os.getenv("DATABASE_URL")
     engine = create_engine(database_url, echo=echo)
     logger.info(f"using database {engine.url}")
+    SQLAlchemyInstrumentor().instrument(engine=engine)
     return engine
 
 

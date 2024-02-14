@@ -97,6 +97,7 @@ k8s_yaml('deploy/rabbitmq.yaml')
 k8s_yaml('deploy/cleaning.yaml')
 k8s_yaml('deploy/cleaning_worker.yaml')
 k8s_yaml('deploy/prometheus.yaml')
+k8s_yaml('deploy/jaeger.yaml')
 
 # Customize a Kubernetes resource
 #   By default, Kubernetes resource names are automatically assigned
@@ -144,6 +145,11 @@ k8s_resource(
 k8s_resource(
     'prometheus',
     port_forwards=['9090:9090']
+)
+
+k8s_resource(
+    'jaeger',
+    port_forwards=['16686:16686', '4317:4317']
 )
 
 # Run local commands

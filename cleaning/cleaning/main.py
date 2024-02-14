@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from sqlmodel import Session, text
 
 from cleaning import database
 from cleaning.api import days
 from cleaning.database import get_db
+from cleaning.tracing import setup_tracing
 
 
 @asynccontextmanager
@@ -22,6 +24,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(days.router)
+
+setup_tracing()
+FastAPIInstrumentor().instrument_app(app)
 
 
 @app.get("/health")
